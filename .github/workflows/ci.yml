@@ -1,0 +1,30 @@
+name: CI
+
+# Run this workflow every time code is pushed to main, or a pull request is opened
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build-and-scan:
+    # GitHub gives us a temporary Linux machine for free
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Download the repo's files onto that machine
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Build the Docker image (same command you run locally)
+      - name: Build Docker image
+        run: docker build -t devops:${{ github.sha }} .
+
+      # 3. Scan the image for known vulnerabilities with Trivy
+      - name: Scan image with Trivy
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: devops:${{ github.sha }}
+          severity: HIGH,CRITICAL
+          # 0 = report problems but do not fail the pipeline (good for learning)
+          # change to 1 later to make the pipeline fail when problems are found
+          exit-code: 0
