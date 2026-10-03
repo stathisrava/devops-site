@@ -1,8 +1,8 @@
-# Start from a small, ready-made image that already contains the nginx web server
-FROM nginx:alpine
+# Start from a specific Nginx + Alpine version
+FROM nginx:1.31-alpine3.24
 
-# Copy our web page into the folder where nginx looks for pages to serve
+# Copy our web page into Nginx's web directory
 COPY index.html /usr/share/nginx/html/index.html
 
-# Document that the container listens on port 80 (the standard web port)
+# Document that Nginx listens on port 80
 EXPOSE 80
