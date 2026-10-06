@@ -4,7 +4,7 @@ terraform {
   required_providers {
     cloudflare = {
       source  = "cloudflare/cloudflare"
-      version = "~> 4.0"
+      version = "~> 5.24"
     }
   }
 }
@@ -23,8 +23,28 @@ variable "cloudflare_account_id" {
 }
 
 resource "cloudflare_workers_script" "site" {
-  account_id = var.cloudflare_account_id
-  name       = "devops-site"
-  content    = file("worker.js")
-  module     = true
+  account_id  = var.cloudflare_account_id
+  script_name = "devops-site"
+
+  content = <<-EOT
+  export default {
+    async fetch(request, env) {
+      return new Response("Worker fallback");
+    }
+  };
+EOT
+
+  main_module = "index.js"
+
+  assets = {
+    directory = "../public"
+
+  }
+}
+
+resource "cloudflare_workers_script_subdomain" "site" {
+  account_id  = var.cloudflare_account_id
+  script_name = cloudflare_workers_script.site.script_name
+
+  enabled = true
 }
