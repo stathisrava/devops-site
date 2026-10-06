@@ -17,7 +17,7 @@ jobs:
     steps:
       # 1. Download the repository
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       # 2. Build the Docker image
       - name: Build Docker image
@@ -31,7 +31,7 @@ jobs:
           severity: HIGH,CRITICAL
           exit-code: 1
           ignore-unfixed: true
-          args: --skip-version-check
+          #args: --skip-version-check
 
   terraform:
     name: Terraform Validation
@@ -48,7 +48,7 @@ jobs:
 
       # 2. Install Terraform
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v3
+        uses: hashicorp/setup-terraform@v4
 
       # 3. Initialize Terraform
       - name: Terraform Init

@@ -9,9 +9,9 @@ echo "Adding files..."
 git add .
 
 echo "Committing..."
-git commit -m "$1"
+git commit -m "$1"  #the first argument 
 
-if [ $? -ne 0 ]; then
+if [ $? -ne 0 ]; then # successful=0 
     echo "Commit failed. Nothing was pushed."
     exit 1
 fi
