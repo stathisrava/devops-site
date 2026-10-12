@@ -6,7 +6,7 @@ RUN apk update && \
     rm -rf /var/cache/apk/*
 
 # Copy our web page into Nginx's web directory
-COPY index.html /usr/share/nginx/html/index.html
+COPY public/index.html /usr/share/nginx/html/index.html
 
 # Document that Nginx listens on port 80
 EXPOSE 80
