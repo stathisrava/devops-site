@@ -1,17 +1,19 @@
 # DevOps Site
 
-A DevOps project demonstrating containerization, CI security scanning, infrastructure as code, and a simple website served by NGINX.
-Live Website: https://devops-site.stathisrav.workers.dev/
+A DevOps portfolio project demonstrating containerization, continuous integration, container image security scanning, infrastructure as code, and website hosting with Cloudflare Workers.  
+
+**Live Website:** https://devops-site.stathisrav.workers.dev/  
 
 ## Technologies
 
-- **Docker** — Containerizes the website.
-- **NGINX** — Serves the static HTML page.
+- **Docker** — Packages the website into a container image.
+- **NGINX** — Serves the static HTML page locally.
 - **Docker Compose** — Simplifies local build and execution.
-- **GitHub Actions** — Automates CI checks.
+- **GitHub Actions** — Automates continuous integration checks.
 - **Trivy** — Scans the container image for vulnerabilities.
-- **Terraform** — Defines and validates infrastructure as code.
-- **Cloudflare Workers** — Provides a serverless web-serving component.
+- **Terraform** — Defines and validates Cloudflare infrastructure as code.
+- **Cloudflare Workers** — Hosts the publicly accessible website.
+- **Bash and Git** — Automates common version-control operations.
 
 
 ## Getting Started
@@ -25,7 +27,7 @@ git clone https://github.com/stathisrava/devops-site.git
 cd devops-site
 ```
 
-Build the Docker image and start the service:
+Build the Docker image and start the website:
 
 ```bash
 docker compose up --build
@@ -42,32 +44,45 @@ Docker Compose builds the image using the `Dockerfile`, starts the NGINX contain
 
 The GitHub Actions workflow runs on pushes to the `main` branch and on pull requests.
 
-It performs two main jobs:
-
-### 1. Docker Build and Security Scan
+### Docker Build and Security Scan
 
 - Builds the Docker image.
-- Uses Trivy to scan the image for **HIGH** and **CRITICAL** vulnerabilities.
+- Uses Trivy to scan for **HIGH** and **CRITICAL** vulnerabilities.
 - Fails the scan step when vulnerabilities matching the configured criteria are detected.
+- Ignores vulnerabilities for which no fix is available.
 
-The scan is configured to ignore unfixed vulnerabilities.
-
-### 2. Terraform Validation
+### Terraform Validation
 
 - Initializes Terraform without configuring a remote backend.
 - Checks Terraform formatting.
 - Validates the Terraform configuration.
 
-These checks help catch container build issues, potential image vulnerabilities, and infrastructure configuration errors early in the development process.
+**Note:** The CI workflow validates the Terraform configuration but does not automatically deploy infrastructure.
 
 ## Infrastructure as Code
 
-The `terraform/` directory contains the Terraform configuration and a Cloudflare Worker script.
+The `terraform/main.tf` file defines infrastructure for Cloudflare Workers using Terraform.
 
-Terraform is used to define the Cloudflare Worker resource and manage its configuration as code. The GitHub Actions workflow validates the Terraform configuration, but validation alone does not deploy infrastructure.
+The configuration includes:
 
-Configure any required Cloudflare credentials and variables securely before running Terraform operations that interact with real infrastructure.
+- The Cloudflare provider.
+- Variables for the Cloudflare API token and account ID.
+- A Worker resource with an inline request handler.
+- A reference to the `public/` directory for static assets.
+- Configuration to enable access through a `workers.dev` subdomain.
 
+## Git Automation Script
 
+The `scripts/git-push.sh` script automates common Git operations:
 
+1. Displays the current Git status.
+2. Stages changes using `git add .`.
+3. Creates a commit using the first command-line argument as the commit message.
+4. Pushes the commit to the remote repository.
+5. Checks whether the commit and push operations succeeded.
 
+Run the script from the repository root using Git Bash or another Bash-compatible terminal:
+
+```bash
+bash scripts/git-push.sh "Update website"
+```
